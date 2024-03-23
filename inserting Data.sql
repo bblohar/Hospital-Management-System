@@ -1,0 +1,14 @@
+use sys;
+select*from patients;
+select*from staff;
+select*from Department;
+select*from Ward;
+select*from Room;
+select*from Bed;
+select*from doctor;
+select * from Diagnosis;
+select*from admission;
+select *from Prescription;
+select *from test;
+select *from Test_Results;
+select*from Bill;
