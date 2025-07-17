@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sai-Samarth Hospital- Receptionist Panel</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .container {
+            max-width: 1200px;
+        }
+        .tab-button.active {
+            background-color: #e5e7eb; /* Gray-200 */
+            border-bottom: 2px solid #2563eb; /* Blue-600 */
+            color: #1f2937; /* Gray-800 */
+        }
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
+        }
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <!-- Login Screen -->
+    <div id="loginScreen" class="min-h-screen flex items-center justify-center bg-gray-100">
+        <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-sm">
+            <h2 class="text-2xl font-bold text-center text-blue-800 mb-6">SSH Login</h2>
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                    <input type="text" id="username" name="username" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border">
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="password" name="password" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border">
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md shadow-md">
+                    Login
+                </button>
+                <p id="loginMessage" class="text-center text-red-500 text-sm mt-2 hidden"></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Application Container (hidden by default) -->
+    <div id="appContainer" class="min-h-screen flex flex-col items-center py-8 hidden">
+        <!-- Header -->
+        <header class="w-full bg-white shadow-md rounded-lg p-4 mb-8 container flex justify-between items-center">
+            <h1 class="text-3xl font-bold text-blue-800">Sai-Samarth Hospital</h1>
+            <div class="flex items-center">
+                <span id="userRoleDisplay" class="text-gray-700 mr-4 font-medium"></span>
+                <button id="logoutBtn" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md shadow-md">
+                    Logout
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content Area
+        <main class="w-full container bg-white shadow-md rounded-lg p-6">
+             Tab Navigation -->
+            <!-- <div class="flex border-b border-gray-200 mb-6">
+                <button id="dashboardTabBtn" class="tab-button py-3 px-6 text-lg font-medium text-gray-700 hover:bg-gray-100 focus:outline-none rounded-tl-lg active">
+                    Dashboard
+                </button>
+                <button id="patientsTabBtn" class="tab-button py-3 px-6 text-lg font-medium text-gray-700 hover:bg-gray-100 focus:outline-none">
+                    Patients
+                </button>
+                <button id="admissionsTabBtn" class="tab-button py-3 px-6 text-lg font-medium text-gray-700 hover:bg-gray-100 focus:outline-none">
+                    Admissions
+                </button>
+                <button id="doctorsTabBtn" class="tab-button py-3 px-6 text-lg font-medium text-gray-700 hover:bg-gray-100 focus:outline-none">
+                    Doctors
+                </button>
+                <button id="appointmentsTabBtn" class="tab-button py-3 px-6 text-lg font-medium text-gray-700 hover:bg-gray-100 focus:outline-none">
+                    Appointments
+                </button> -->
+                <!-- Placeholder tabs for other modules -->
+                <!-- <button id="pharmacyTabBtn" class="tab-button py-3 px-6 text-lg font-medium text-gray-700 hover:bg-gray-100 focus:outline-none">
+                    Pharmacy
+                </button>
+                <button id="laboratoryTabBtn" class="tab-button py-3 px-6 text-lg font-medium text-gray-700 hover:bg-gray-100 focus:outline-none">
+                    Laboratory
+                </button>
+                <button id="billingTabBtn" class="tab-button py-3 px-6 text-lg font-medium text-gray-700 hover:bg-gray-100 focus:outline-none">
+                    Billing
+                </button>
+            </div> -->
+
+            <!-- Tab Content: Dashboard -->
+            <!-- <div id="dashboardTab" class="tab-content">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Dashboard</h2>
+                <div id="dashboardContent" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    Content will be loaded based on user role -->
+                    <!-- <div class="bg-blue-50 p-6 rounded-lg shadow-sm">
+                        <h3 class="text-xl font-semibold text-blue-800 mb-2">Welcome!</h3>
+                        <p class="text-gray-700">Your personalized dashboard content will appear here based on your role.</p>
+                    </div>
+                </div>
+            </div> -->
+
+            <!-- Tab Content: Patients -->
+            <!-- <div id="patientsTab" class="tab-content hidden">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Patient Management</h2>
+                <button id="addPatientBtn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md shadow-md mb-6">
+                    Register New Patient
+                </button> -->
+
+                <!-- Patient List Table -->
+                <!-- <div class="overflow-x-auto bg-white rounded-lg shadow">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient ID</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone No.</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gender</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patientsTableBody" class="bg-white divide-y divide-gray-200"> -->
+                            <!-- Patient rows will be inserted here by JavaScript -->
+                            <!-- <tr>
+                                <td colspan="5" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">Loading patients...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div> -->
+
+            <!-- Tab Content: Admissions -->
+            <!-- <div id="admissionsTab" class="tab-content hidden">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Admission Management</h2>
+                <button id="addAdmissionBtn" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md shadow-md mb-6">
+                    New Admission
+                </button> -->
+
+                <!-- Admission List Table -->
+                <!-- <div class="overflow-x-auto bg-white rounded-lg shadow">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Admission ID</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient Name</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Doctor Name</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ward Name</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Admission Date</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Discharge Date</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admissionsTableBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Admission rows will be inserted here by JavaScript -->
+                            <!-- <tr>
+                                <td colspan="7" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">Loading admissions...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div> -->
+
+            <!-- Tab Content: Doctors -->
+            <!-- <div id="doctorsTab" class="tab-content hidden">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Doctor Management</h2>
+                <button id="addDoctorBtn" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md shadow-md mb-6">
+                    Add New Doctor
+                </button>
+
+                <div class="overflow-x-auto bg-white rounded-lg shadow">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Doctor ID</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Specialization</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Staff ID</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="doctorsTableBody" class="bg-white divide-y divide-gray-200">
+                            <tr> --> 
+                                <!-- <td colspan="5" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">Loading doctors...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div> -->
+
+            <!-- Tab Content: Appointments -->
+            <!-- <div id="appointmentsTab" class="tab-content hidden">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Appointment Scheduling</h2>
+                <button id="addAppointmentBtn" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-md shadow-md mb-6">
+                    Schedule New Appointment
+                </button>
+
+                <div class="overflow-x-auto bg-white rounded-lg shadow">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Appointment ID</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient Name</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Doctor Name</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Appointment Date</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Appointment Time</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appointmentsTableBody" class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td colspan="6" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">Loading appointments...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div> -->
+
+            <!-- Placeholder Tab Content -->
+            <!-- <div id="pharmacyTab" class="tab-content hidden">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Pharmacy Management</h2>
+                <p class="text-gray-700">This section will contain features for managing medicine inventory and prescriptions.</p>
+            </div>
+            <div id="laboratoryTab" class="tab-content hidden">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Laboratory Information System</h2>
+                <p class="text-gray-700">This section will contain features for ordering tests and managing test results.</p>
+            </div>
+            <div id="billingTab" class="tab-content hidden">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Billing & Invoicing</h2>
+                <p class="text-gray-700">This section will contain features for generating bills and processing payments.</p>
+            </div>
+
+        </main>
+    </div>  -->
+
+    <!-- Modals -->
+
+    <!-- Add/Edit Patient Modal -->
+    <div id="patientModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h3 id="patientModalTitle" class="text-xl font-bold mb-4 text-gray-800">Register New Patient</h3>
+            <form id="patientForm" class="space-y-4">
+                <div>
+                    <label for="patientId" class="block text-sm font-medium text-gray-700">Patient ID (Auto-generated)</label>
+                    <input type="text" id="patientId" name="patient_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 bg-gray-100" readonly>
+                </div>
+                <div>
+                    <label for="patientName" class="block text-sm font-medium text-gray-700">Patient Name</label>
+                    <input type="text" id="patientName" name="patient_name" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border">
+                </div>
+                <div>
+                    <label for="patientPhone" class="block text-sm font-medium text-gray-700">Phone Number</label>
+                    <input type="text" id="patientPhone" name="phone_no" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border">
+                </div>
+                <div>
+                    <label for="patientGender" class="block text-sm font-medium text-gray-700">Gender</label>
+                    <select id="patientGender" name="gender" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border bg-white">
+                        <option value="">Select Gender</option>
+                        <option value="M">Male</option>
+                        <option value="F">Female</option>
+                        <option value="O">Other</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md shadow-md">
+                    Save Patient
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add/Edit Admission Modal -->
+    <div id="admissionModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h3 id="admissionModalTitle" class="text-xl font-bold mb-4 text-gray-800">New Admission</h3>
+            <form id="admissionForm" class="space-y-4">
+                <div>
+                    <label for="admissionId" class="block text-sm font-medium text-gray-700">Admission ID (Auto-generated)</label>
+                    <input type="text" id="admissionId" name="admission_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 bg-gray-100">
+                </div>
+                <div>
+                    <label for="admissionPatientId" class="block text-sm font-medium text-gray-700">Patient</label>
+                    <select id="admissionPatientId" name="patient_id" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border bg-white">
+                        <option value="">Select Patient</option>
+                        <!-- Options will be loaded dynamically -->
+                    </select>
+                </div>
+                <div>
+                    <label for="admissionDoctorId" class="block text-sm font-medium text-gray-700">Doctor</label>
+                    <select id="admissionDoctorId" name="doctor_id" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border bg-white">
+                        <option value="">Select Doctor</option>
+                        <!-- Options will be loaded dynamically -->
+                    </select>
+                </div>
+                <div>
+                    <label for="admissionWardId" class="block text-sm font-medium text-gray-700">Ward ID</label>
+                    <input type="number" id="admissionWardId" name="ward_id" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border">
+                </div>
+                <div>
+                    <label for="admissionDate" class="block text-sm font-medium text-gray-700">Admission Date</label>
+                    <input type="date" id="admissionDate" name="admission_date" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border bg-white">
+                </div>
+                <div>
+                    <label for="dischargeDate" class="block text-sm font-medium text-gray-700">Discharge Date (Optional)</label>
+                    <input type="date" id="dischargeDate" name="discharge_date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border bg-white">
+                </div>
+                <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md shadow-md">
+                    Save Admission
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add/Edit Doctor Modal -->
+    <div id="doctorModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h3 id="doctorModalTitle" class="text-xl font-bold mb-4 text-gray-800">Add New Doctor</h3>
+            <form id="doctorForm" class="space-y-4">
+                <div>
+                    <label for="doctorId" class="block text-sm font-medium text-gray-700">Doctor ID (Auto-generated)</label>
+                    <input type="text" id="doctorId" name="doctor_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 bg-gray-100" readonly>
+                </div>
+                <div>
+                    <label for="doctorName" class="block text-sm font-medium text-gray-700">Doctor Name</label>
+                    <input type="text" id="doctorName" name="doctor_name" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border">
+                </div>
+                <div>
+                    <label for="doctorSpecialization" class="block text-sm font-medium text-gray-700">Specialization</label>
+                    <input type="text" id="doctorSpecialization" name="specialization" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border">
+                </div>
+                <div>
+                    <label for="doctorStaffId" class="block text-sm font-medium text-gray-700">Staff ID</label>
+                    <input type="number" id="doctorStaffId" name="staff_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border">
+                </div>
+                <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md shadow-md">
+                    Save Doctor
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add/Edit Appointment Modal -->
+    <div id="appointmentModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h3 id="appointmentModalTitle" class="text-xl font-bold mb-4 text-gray-800">Schedule New Appointment</h3>
+            <form id="appointmentForm" class="space-y-4">
+                <div>
+                    <label for="appointmentId" class="block text-sm font-medium text-gray-700">Appointment ID (Auto-generated)</label>
+                    <input type="text" id="appointmentId" name="appointment_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 bg-gray-100" readonly>
+                </div>
+                <div>
+                    <label for="appointmentPatientId" class="block text-sm font-medium text-gray-700">Patient</label>
+                    <select id="appointmentPatientId" name="patient_id" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border bg-white">
+                        <option value="">Select Patient</option>
+                        <!-- Options will be loaded dynamically -->
+                    </select>
+                </div>
+                <div>
+                    <label for="appointmentDoctorId" class="block text-sm font-medium text-gray-700">Doctor</label>
+                    <select id="appointmentDoctorId" name="doctor_id" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border bg-white">
+                        <option value="">Select Doctor</option>
+                        <!-- Options will be loaded dynamically -->
+                    </select>
+                </div>
+                <div>
+                    <label for="appointmentDate" class="block text-sm font-medium text-gray-700">Appointment Date</label>
+                    <input type="date" id="appointmentDate" name="appointment_date" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border bg-white">
+                </div>
+                <div>
+                    <label for="appointmentTime" class="block text-sm font-medium text-gray-700">Appointment Time</label>
+                    <input type="time" id="appointmentTime" name="appointment_time" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border bg-white">
+                </div>
+                <button type="submit" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-md shadow-md">
+                    Save Appointment
+                </button>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+        const API_BASE_URL = 'http://127.0.0.1:5000/api'; // Ensure this matches your Flask backend URL
+
+        // --- Login/Logout Logic ---
+        const loginScreen = document.getElementById('loginScreen');
+        const appContainer = document.getElementById('appContainer');
+        const loginForm = document.getElementById('loginForm');
+        const loginMessage = document.getElementById('loginMessage');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const userRoleDisplay = document.getElementById('userRoleDisplay');
+
+        let currentUserRole = null; // Stores the current user's role
+
+        loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    currentUserRole = data.role;
+                    userRoleDisplay.textContent = `Role: ${currentUserRole.charAt(0).toUpperCase() + currentUserRole.slice(1)}`;
+                    loginScreen.classList.add('hidden');
+                    appContainer.classList.remove('hidden');
+                    loginMessage.classList.add('hidden');
+                    showTab('dashboardTab'); // Show dashboard on successful login
+                    loadInitialData(); // Load all necessary data after login
+                    updateUIForRole(currentUserRole); // Adjust UI based on role
+                } else {
+                    loginMessage.textContent = data.message || 'Login failed. Please try again.';
+                    loginMessage.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                loginMessage.textContent = 'An error occurred during login. Please try again later.';
+                loginMessage.classList.remove('hidden');
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            currentUserRole = null;
+            appContainer.classList.add('hidden');
+            loginScreen.classList.remove('hidden');
+            loginForm.reset();
+            loginMessage.classList.add('hidden');
+            // Clear tables on logout
+            document.getElementById('patientsTableBody').innerHTML = '<tr><td colspan="5" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">No patients registered yet.</td></tr>';
+            document.getElementById('admissionsTableBody').innerHTML = '<tr><td colspan="7" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">No admissions recorded yet.</td></tr>';
+            document.getElementById('doctorsTableBody').innerHTML = '<tr><td colspan="5" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">No doctors registered yet.</td></tr>';
+            document.getElementById('appointmentsTableBody').innerHTML = '<tr><td colspan="6" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">No appointments scheduled yet.</td></tr>';
+        });
+
+        function updateUIForRole(role) {
+            // Hide all action buttons by default
+            document.getElementById('addPatientBtn').classList.add('hidden');
+            document.getElementById('addAdmissionBtn').classList.add('hidden');
+            document.getElementById('addDoctorBtn').classList.add('hidden');
+            document.getElementById('addAppointmentBtn').classList.add('hidden');
+
+            // Hide all tabs by default
+            document.getElementById('patientsTabBtn').classList.add('hidden');
+            document.getElementById('admissionsTabBtn').classList.add('hidden');
+            document.getElementById('doctorsTabBtn').classList.add('hidden');
+            document.getElementById('appointmentsTabBtn').classList.add('hidden');
+            document.getElementById('pharmacyTabBtn').classList.add('hidden');
+            document.getElementById('laboratoryTabBtn').classList.add('hidden');
+            document.getElementById('billingTabBtn').classList.add('hidden');
+
+            // Show dashboard for everyone
+            document.getElementById('dashboardTabBtn').classList.remove('hidden');
+
+            // Adjust visibility based on role
+            if (role === 'receptionist' || role === 'admin') {
+                document.getElementById('patientsTabBtn').classList.remove('hidden');
+                document.getElementById('admissionsTabBtn').classList.remove('hidden');
+                document.getElementById('appointmentsTabBtn').classList.remove('hidden');
+                document.getElementById('addPatientBtn').classList.remove('hidden');
+                document.getElementById('addAdmissionBtn').classList.remove('hidden');
+                document.getElementById('addAppointmentBtn').classList.remove('hidden');
+            }
+            if (role === 'admin') {
+                document.getElementById('doctorsTabBtn').classList.remove('hidden');
+                document.getElementById('addDoctorBtn').classList.remove('hidden');
+                document.getElementById('pharmacyTabBtn').classList.remove('hidden');
+                document.getElementById('laboratoryTabBtn').classList.remove('hidden');
+                document.getElementById('billingTabBtn').classList.remove('hidden');
+            }
+            if (role === 'doctor') {
+                document.getElementById('patientsTabBtn').classList.remove('hidden'); // Doctors might need to see patients
+                document.getElementById('admissionsTabBtn').classList.remove('hidden'); // Doctors might need to see admissions
+                document.getElementById('appointmentsTabBtn').classList.remove('hidden'); // Doctors manage their appointments
+                // No add buttons for doctors in this simplified UI
+            }
+            // Add more role-specific UI adjustments as needed
+        }
+
+
+        // --- Tab Switching Logic ---
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        function showTab(tabId) {
+            tabContents.forEach(tab => tab.classList.add('hidden'));
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(tabId).classList.remove('hidden');
+            document.getElementById(tabId + 'Btn').classList.add('active');
+
+            // Re-render data when switching to relevant tabs
+            if (tabId === 'patientsTab') renderPatients();
+            if (tabId === 'admissionsTab') renderAdmissions();
+            if (tabId === 'doctorsTab') renderDoctors();
+            if (tabId === 'appointmentsTab') renderAppointments();
+        }
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tabId = button.id.replace('Btn', '');
+                showTab(tabId);
+            });
+        });
+
+        // --- Modal Logic (Generic) ---
+        function setupModal(modalId, openButtonId, formId, titleId, submitHandler) {
+            const modal = document.getElementById(modalId);
+            const openButton = document.getElementById(openButtonId);
+            const closeButton = modal.querySelector('.close-button');
+            const form = document.getElementById(formId);
+            const titleElement = document.getElementById(titleId);
+
+            if (openButton) { // Check if button exists (might be hidden by role)
+                openButton.onclick = () => {
+                    titleElement.textContent = openButtonId === 'addPatientBtn' ? 'Register New Patient' :
+                                               openButtonId === 'addAdmissionBtn' ? 'New Admission' :
+                                               openButtonId === 'addDoctorBtn' ? 'Add New Doctor' :
+                                               'Schedule New Appointment';
+                    form.reset(); // Clear form on new entry
+                    // Reset read-only IDs
+                    if (formId === 'patientForm') document.getElementById('patientId').value = '';
+                    if (formId === 'admissionForm') document.getElementById('admissionId').value = '';
+                    if (formId === 'doctorForm') document.getElementById('doctorId').value = '';
+                    if (formId === 'appointmentForm') document.getElementById('appointmentId').value = '';
+
+                    // Populate dropdowns for Admission and Appointment modals
+                    if (formId === 'admissionForm' || formId === 'appointmentForm') {
+                        populatePatientDropdowns();
+                        populateDoctorDropdowns();
+                    }
+                    modal.style.display = 'flex';
+                };
+            }
+
+            closeButton.onclick = () => {
+                modal.style.display = 'none';
+            };
+
+            window.onclick = (event) => {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            };
+
+            form.onsubmit = (event) => {
+                event.preventDefault();
+                submitHandler(form);
+                modal.style.display = 'none';
+            };
+        }
+
+        // --- Populate Dropdowns (for Admissions and Appointments) ---
+        async function populatePatientDropdowns() {
+            const patientSelects = [
+                document.getElementById('admissionPatientId'),
+                document.getElementById('appointmentPatientId')
+            ];
+            patientSelects.forEach(select => {
+                if (select) {
+                    select.innerHTML = '<option value="">Select Patient</option>';
+                }
+            });
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/patients`);
+                const patients = await response.json();
+                patients.forEach(patient => {
+                    patientSelects.forEach(select => {
+                        if (select) {
+                            const option = document.createElement('option');
+                            option.value = patient.patient_id;
+                            option.textContent = `${patient.patient_name} (ID: ${patient.patient_id})`;
+                            select.appendChild(option);
+                        }
+                    });
+                });
+            } catch (error) {
+                console.error('Error fetching patients for dropdown:', error);
+            }
+        }
+
+        async function populateDoctorDropdowns() {
+            const doctorSelects = [
+                document.getElementById('admissionDoctorId'),
+                document.getElementById('appointmentDoctorId')
+            ];
+            doctorSelects.forEach(select => {
+                if (select) {
+                    select.innerHTML = '<option value="">Select Doctor</option>';
+                }
+            });
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/doctors`);
+                const doctors = await response.json();
+                doctors.forEach(doctor => {
+                    doctorSelects.forEach(select => {
+                        if (select) {
+                            const option = document.createElement('option');
+                            option.value = doctor.doctor_id;
+                            option.textContent = `${doctor.doctor_name} (${doctor.specialization})`;
+                            select.appendChild(option);
+                        }
+                    });
+                });
+            } catch (error) {
+                console.error('Error fetching doctors for dropdown:', error);
+            }
+        }
+
+
+        // --- Render Functions (Fetch from Backend) ---
+        async function renderPatients() {
+            const tableBody = document.getElementById('patientsTableBody');
+            tableBody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">Loading patients...</td></tr>';
+            try {
+                const response = await fetch(`${API_BASE_URL}/patients`);
+                const patients = await response.json();
+                tableBody.innerHTML = ''; // Clear loading message
+
+                if (patients.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">No patients registered yet.</td></tr>';
+                    return;
+                }
+
+                patients.forEach(patient => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${patient.patient_id}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${patient.patient_name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${patient.phone_no || 'N/A'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${patient.gender || 'N/A'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button onclick="editPatient(${patient.patient_id})" class="text-indigo-600 hover:text-indigo-900 mr-2">Edit</button>
+                            <button onclick="deletePatient(${patient.patient_id})" class="text-red-600 hover:text-red-900">Delete</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error rendering patients:', error);
+                tableBody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 whitespace-nowrap text-center text-red-500">Failed to load patients. Please check backend.</td></tr>';
+            }
+        }
+
+        async function renderAdmissions() {
+            const tableBody = document.getElementById('admissionsTableBody');
+            tableBody.innerHTML = '<tr><td colspan="7" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">Loading admissions...</td></tr>';
+            try {
+                const response = await fetch(`${API_BASE_URL}/admissions`);
+                const admissions = await response.json();
+                tableBody.innerHTML = ''; // Clear loading message
+
+                if (admissions.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="7" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">No admissions recorded yet.</td></tr>';
+                    return;
+                }
+
+                admissions.forEach(admission => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${admission.admission_id}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${admission.patient_name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${admission.doctor_name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${admission.ward_name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${admission.admission_date}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${admission.discharge_date || 'N/A'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button onclick="editAdmission(${admission.admission_id})" class="text-indigo-600 hover:text-indigo-900 mr-2">Edit</button>
+                            <button onclick="deleteAdmission(${admission.admission_id})" class="text-red-600 hover:text-red-900">Delete</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error rendering admissions:', error);
+                tableBody.innerHTML = '<tr><td colspan="7" class="px-6 py-4 whitespace-nowrap text-center text-red-500">Failed to load admissions. Please check backend.</td></tr>';
+            }
+        }
+
+        async function renderDoctors() {
+            const tableBody = document.getElementById('doctorsTableBody');
+            tableBody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">Loading doctors...</td></tr>';
+            try {
+                const response = await fetch(`${API_BASE_URL}/doctors`);
+                const doctors = await response.json();
+                tableBody.innerHTML = ''; // Clear loading message
+
+                if (doctors.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">No doctors registered yet.</td></tr>';
+                    return;
+                }
+
+                doctors.forEach(doctor => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${doctor.doctor_id}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${doctor.doctor_name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${doctor.specialization || 'N/A'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${doctor.staff_id || 'N/A'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button onclick="editDoctor(${doctor.doctor_id})" class="text-indigo-600 hover:text-indigo-900 mr-2">Edit</button>
+                            <button onclick="deleteDoctor(${doctor.doctor_id})" class="text-red-600 hover:text-red-900">Delete</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error rendering doctors:', error);
+                tableBody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 whitespace-nowrap text-center text-red-500">Failed to load doctors. Please check backend.</td></tr>';
+            }
+        }
+
+        async function renderAppointments() {
+            const tableBody = document.getElementById('appointmentsTableBody');
+            tableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">Loading appointments...</td></tr>';
+            try {
+                const response = await fetch(`${API_BASE_URL}/appointments`);
+                const appointments = await response.json();
+                tableBody.innerHTML = ''; // Clear loading message
+
+                if (appointments.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">No appointments scheduled yet.</td></tr>';
+                    return;
+                }
+
+                appointments.forEach(appointment => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${appointment.appointment_id}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${appointment.patient_name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${appointment.doctor_name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${appointment.appointment_date}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${appointment.appointment_time}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button onclick="editAppointment(${appointment.appointment_id})" class="text-indigo-600 hover:text-indigo-900 mr-2">Edit</button>
+                            <button onclick="deleteAppointment(${appointment.appointment_id})" class="text-red-600 hover:text-red-900">Delete</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error rendering appointments:', error);
+                tableBody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 whitespace-nowrap text-center text-red-500">Failed to load appointments. Please check backend.</td></tr>';
+            }
+        }
+
+
+        // --- Patient CRUD Operations (Frontend -> Backend) ---
+        async function handlePatientSubmit(form) {
+            const formData = new FormData(form);
+            const patientData = Object.fromEntries(formData.entries());
+
+            try {
+                const method = patientData.patient_id ? 'PUT' : 'POST';
+                const url = patientData.patient_id ? `${API_BASE_URL}/patients/${patientData.patient_id}` : `${API_BASE_URL}/patients`;
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(patientData)
+                });
+                const result = await response.json();
+
+                if (response.ok) {
+                    console.log('Patient operation successful:', result);
+                    renderPatients(); // Refresh list
+                    populatePatientDropdowns(); // Update dropdowns
+                } else {
+                    console.error('Patient operation failed:', result.error);
+                    alert(`Error: ${result.error}`); // Use a custom modal in production
+                }
+            } catch (error) {
+                console.error('Network error during patient operation:', error);
+                alert('Network error. Could not connect to the backend.'); // Use a custom modal in production
+            }
+        }
+
+        async function editPatient(id) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/patients/${id}`);
+                const patient = await response.json();
+                if (response.ok && patient) {
+                    document.getElementById('patientModalTitle').textContent = 'Edit Patient Details';
+                    document.getElementById('patientId').value = patient.patient_id;
+                    document.getElementById('patientName').value = patient.patient_name;
+                    document.getElementById('patientPhone').value = patient.phone_no;
+                    document.getElementById('patientGender').value = patient.gender;
+                    document.getElementById('patientModal').style.display = 'flex';
+                } else {
+                    console.error('Patient not found for editing:', id);
+                    alert('Patient not found.');
+                }
+            } catch (error) {
+                console.error('Error fetching patient for edit:', error);
+                alert('Failed to fetch patient details for editing.');
+            }
+        }
+
+        async function deletePatient(id) {
+            if (confirm(`Are you sure you want to delete patient ID: ${id}? This action cannot be undone.`)) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/patients/${id}`, { method: 'DELETE' });
+                    const result = await response.json();
+                    if (response.ok) {
+                        console.log('Patient deleted:', result);
+                        renderPatients(); // Refresh list
+                        populatePatientDropdowns(); // Update dropdowns
+                    } else {
+                        console.error('Patient deletion failed:', result.error);
+                        alert(`Error: ${result.error}`);
+                    }
+                } catch (error) {
+                    console.error('Network error during patient deletion:', error);
+                    alert('Network error. Could not connect to the backend.');
+                }
+            }
+        }
+
+        // --- Admission CRUD Operations (Frontend -> Backend) ---
+        async function handleAdmissionSubmit(form) {
+            const formData = new FormData(form);
+            const admissionData = Object.fromEntries(formData.entries());
+
+            try {
+                const method = admissionData.admission_id ? 'PUT' : 'POST';
+                const url = admissionData.admission_id ? `${API_BASE_URL}/admissions/${admissionData.admission_id}` : `${API_BASE_URL}/admissions`;
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(admissionData)
+                });
+                const result = await response.json();
+
+                if (response.ok) {
+                    console.log('Admission operation successful:', result);
+                    renderAdmissions(); // Refresh list
+                } else {
+                    console.error('Admission operation failed:', result.error);
+                    alert(`Error: ${result.error}`);
+                }
+            } catch (error) {
+                console.error('Network error during admission operation:', error);
+                alert('Network error. Could not connect to the backend.');
+            }
+        }
+
+        async function editAdmission(id) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/admissions/${id}`);
+                const admission = await response.json();
+                if (response.ok && admission) {
+                    document.getElementById('admissionModalTitle').textContent = 'Edit Admission Details';
+                    document.getElementById('admissionId').value = admission.admission_id;
+                    document.getElementById('admissionPatientId').value = admission.patient_id;
+                    document.getElementById('admissionDoctorId').value = admission.doctor_id;
+                    document.getElementById('admissionWardId').value = admission.ward_id;
+                    document.getElementById('admissionDate').value = admission.admission_date;
+                    document.getElementById('dischargeDate').value = admission.discharge_date;
+                    document.getElementById('admissionModal').style.display = 'flex';
+                } else {
+                    console.error('Admission not found for editing:', id);
+                    alert('Admission not found.');
+                }
+            } catch (error) {
+                console.error('Error fetching admission for edit:', error);
+                alert('Failed to fetch admission details for editing.');
+            }
+        }
+
+        async function deleteAdmission(id) {
+            if (confirm(`Are you sure you want to delete admission ID: ${id}? This action cannot be undone.`)) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/admissions/${id}`, { method: 'DELETE' });
+                    const result = await response.json();
+                    if (response.ok) {
+                        console.log('Admission deleted:', result);
+                        renderAdmissions(); // Refresh list
+                    } else {
+                        console.error('Admission deletion failed:', result.error);
+                        alert(`Error: ${result.error}`);
+                    }
+                } catch (error) {
+                    console.error('Network error during admission deletion:', error);
+                    alert('Network error. Could not connect to the backend.');
+                }
+            }
+        }
+
+        // --- Doctor CRUD Operations (Frontend -> Backend) ---
+        async function handleDoctorSubmit(form) {
+            const formData = new FormData(form);
+            const doctorData = Object.fromEntries(formData.entries());
+
+            try {
+                const method = doctorData.doctor_id ? 'PUT' : 'POST';
+                const url = doctorData.doctor_id ? `${API_BASE_URL}/doctors/${doctorData.doctor_id}` : `${API_BASE_URL}/doctors`;
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(doctorData)
+                });
+                const result = await response.json();
+
+                if (response.ok) {
+                    console.log('Doctor operation successful:', result);
+                    renderDoctors(); // Refresh list
+                    populateDoctorDropdowns(); // Update dropdowns
+                } else {
+                    console.error('Doctor operation failed:', result.error);
+                    alert(`Error: ${result.error}`);
+                }
+            } catch (error) {
+                console.error('Network error during doctor operation:', error);
+                alert('Network error. Could not connect to the backend.');
+            }
+        }
+
+        async function editDoctor(id) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/doctors/${id}`);
+                const doctor = await response.json();
+                if (response.ok && doctor) {
+                    document.getElementById('doctorModalTitle').textContent = 'Edit Doctor Details';
+                    document.getElementById('doctorId').value = doctor.doctor_id;
+                    document.getElementById('doctorName').value = doctor.doctor_name;
+                    document.getElementById('doctorSpecialization').value = doctor.specialization;
+                    document.getElementById('doctorStaffId').value = doctor.staff_id;
+                    document.getElementById('doctorModal').style.display = 'flex';
+                } else {
+                    console.error('Doctor not found for editing:', id);
+                    alert('Doctor not found.');
+                }
+            } catch (error) {
+                console.error('Error fetching doctor for edit:', error);
+                alert('Failed to fetch doctor details for editing.');
+            }
+        }
+
+        async function deleteDoctor(id) {
+            if (confirm(`Are you sure you want to delete doctor ID: ${id}? This action cannot be undone.`)) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/doctors/${id}`, { method: 'DELETE' });
+                    const result = await response.json();
+                    if (response.ok) {
+                        console.log('Doctor deleted:', result);
+                        renderDoctors(); // Refresh list
+                        populateDoctorDropdowns(); // Update dropdowns
+                    } else {
+                        console.error('Doctor deletion failed:', result.error);
+                        alert(`Error: ${result.error}`);
+                    }
+                } catch (error) {
+                    console.error('Network error during doctor deletion:', error);
+                    alert('Network error. Could not connect to the backend.');
+                }
+            }
+        }
+
+        // --- Appointment CRUD Operations (Frontend -> Backend) ---
+        async function handleAppointmentSubmit(form) {
+            const formData = new FormData(form);
+            const appointmentData = Object.fromEntries(formData.entries());
+
+            try {
+                const method = appointmentData.appointment_id ? 'PUT' : 'POST';
+                const url = appointmentData.appointment_id ? `${API_BASE_URL}/appointments/${appointmentData.appointment_id}` : `${API_BASE_URL}/appointments`;
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(appointmentData)
+                });
+                const result = await response.json();
+
+                if (response.ok) {
+                    console.log('Appointment operation successful:', result);
+                    renderAppointments(); // Refresh list
+                } else {
+                    console.error('Appointment operation failed:', result.error);
+                    alert(`Error: ${result.error}`);
+                }
+            } catch (error) {
+                console.error('Network error during appointment operation:', error);
+                alert('Network error. Could not connect to the backend.');
+            }
+        }
+
+        async function editAppointment(id) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/appointments/${id}`);
+                const appointment = await response.json();
+                if (response.ok && appointment) {
+                    document.getElementById('appointmentModalTitle').textContent = 'Edit Appointment Details';
+                    document.getElementById('appointmentId').value = appointment.appointment_id;
+                    document.getElementById('appointmentPatientId').value = appointment.patient_id;
+                    document.getElementById('appointmentDoctorId').value = appointment.doctor_id;
+                    document.getElementById('appointmentDate').value = appointment.appointment_date;
+                    document.getElementById('appointmentTime').value = appointment.appointment_time;
+                    document.getElementById('appointmentModal').style.display = 'flex';
+                } else {
+                    console.error('Appointment not found for editing:', id);
+                    alert('Appointment not found.');
+                }
+            } catch (error) {
+                console.error('Error fetching appointment for edit:', error);
+                alert('Failed to fetch appointment details for editing.');
+            }
+        }
+
+        async function deleteAppointment(id) {
+            if (confirm(`Are you sure you want to delete appointment ID: ${id}? This action cannot be undone.`)) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/appointments/${id}`, { method: 'DELETE' });
+                    const result = await response.json();
+                    if (response.ok) {
+                        console.log('Appointment deleted:', result);
+                        renderAppointments(); // Refresh list
+                    } else {
+                        console.error('Appointment deletion failed:', result.error);
+                        alert(`Error: ${result.error}`);
+                    }
+                } catch (error) {
+                    console.error('Network error during appointment deletion:', error);
+                    alert('Network error. Could not connect to the backend.');
+                }
+            }
+        }
+
+
+        // --- Initial Load Function ---
+        async function loadInitialData() {
+            // Populate dropdowns first as they are needed for forms
+            await populatePatientDropdowns();
+            await populateDoctorDropdowns();
+
+            // Then render tables
+            renderPatients();
+            renderAdmissions();
+            renderDoctors();
+            renderAppointments();
+        }
+
+        // --- Initialize Modals and Render Data on Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            setupModal('patientModal', 'addPatientBtn', 'patientForm', 'patientModalTitle', handlePatientSubmit);
+            setupModal('admissionModal', 'addAdmissionBtn', 'admissionForm', 'admissionModalTitle', handleAdmissionSubmit);
+            setupModal('doctorModal', 'addDoctorBtn', 'doctorForm', 'doctorModalTitle', handleDoctorSubmit);
+            setupModal('appointmentModal', 'addAppointmentBtn', 'appointmentForm', 'appointmentModalTitle', handleAppointmentSubmit);
+
+            // Initially, only the login screen is visible
+            loginScreen.classList.remove('hidden');
+            appContainer.classList.add('hidden');
+        });
+    </script>
+</body>
+</html>
