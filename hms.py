@@ -15,8 +15,8 @@ CORS(app)
 DB_CONFIG = {
     'host': 'localhost',
     'database': 'sys', # As per your hospital.sql file, you are using 'sys' database
-    'user': 'root', # e.g., 'root'
-    'password': 'Spyrob@29' # e.g., 'password'
+    'user': '', # e.g., 'root'
+    'password': '' # e.g., 'password'
 }
 
 # --- Database Connection Helper Function ---
